@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Connect Four</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        button {
+            font-size: 1em;
+        }
+        .dropper-row {
+            font-size: 32px
+        }
+        .dropper {
+            cursor: pointer;
+            border: solid 4px transparent;
+        }
+        td {
+            border-left: solid 1px lightgray;
+        }
+        .gameboard {
+            font-size: 32px
+        }
+        .gametile {
+            border: solid 4px transparent;
+        }
+        .gametile.highlight {
+            border: solid 4px darkorchid;
+            background-color: darkorchid;
+        }
+    </style>
+</head>
+
+<body>
+    <div data-bind="ifnot: board">
+        <ul>
+            <li>To drop a piece, click the #️⃣ above the column</li>
+            <li>To see the possible moves the computer is considering, click "Show/hide stats"</li>
+            <li>Click "Start game" when ready</li>
+        </ul>
+    </div>
+    <div data-bind="if: gameOver">
+        <span style="display: inline-block; padding: 4px">Game over</span>
+    </div>
+    <div data-bind="if: gameInProgress">
+        <div class="dropper-row" data-bind="click: drop">
+            <span class="dropper" data-col="0">1️⃣</span>
+            <span class="dropper" data-col="1">2️⃣</span>
+            <span class="dropper" data-col="2">3️⃣</span>
+            <span class="dropper" data-col="3">4️⃣</span>
+            <span class="dropper" data-col="4">5️⃣</span>
+            <span class="dropper" data-col="5">6️⃣</span>
+            <span class="dropper" data-col="6">7️⃣</span>
+            <span class="dropper" data-bind="if: myturn">🟠</span>
+        </div>
+    </div>
+    <div class="gameboard" data-bind="with: board">
+        <div data-bind="foreach: rows">
+            <div class="board-row" data-bind="foreach: $data">
+                <span class="gametile" data-bind="text: tile, css: { highlight: lastPlaced }"></span>
+            </div>
+        </div>
+    </div>
+
+    <div data-bind="ifnot: gameInProgress" style="margin-top: 1em">
+        <button data-bind="click: startGame">Start Game</button>
+        <div style="margin-top: 5px">
+            <label for="computerStarts">Computer starts</label>
+            <input id="computerStarts" type="checkbox" data-bind="checked: computerStarts" />
+        </div>
+    </div>
+    <div data-bind="if: gameInProgress" style="margin-top: 1em">
+        <button data-bind="click: endGame">End Game</button>
+    </div>
+
+    <div data-bind="if: gameInProgress" style="margin-top: 2em">
+        <button data-bind="click: toggleStats">Show/Hide Stats</button>
+    </div>
+
+    <div data-bind="if: showStats">
+        <div data-bind="with: stats">
+            <div>Total playouts: <span data-bind="text: playouts"></span></div>
+            <table>
+                <thead>
+                    <tr>
+                        <td>Column</td>
+                        <td>Preference</td>
+                        <td>Confidence</td>
+                    </tr>
+                </thead>
+                <tbody data-bind="foreach: options">
+                    <tr>
+                        <td data-bind="text: action"></td>
+                        <td><span data-bind="text: playouts"></span>%</td>
+                        <td><span data-bind="text: avgUtility"></span>%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.0/knockout-min.js"></script>
+    <script type="module" src="index.mjs"></script>
+</body>
+
+</html>
