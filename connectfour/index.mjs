@@ -24,12 +24,14 @@ function stateToGrid(node) {
     const action = node.action
     const rows = []
     let pos = 0
+    const winningCells = state.getWinningCells()
     for (let row = 0; row < state.rowCount; row++) {
         const rowtiles = []
         for (let col = 0; col < state.colCount; col++) {
             const tile = tiles[state.board[pos + col]]
-            const lastPlaced = action && action.row == row && action.col == col
-            rowtiles.push({tile, col, lastPlaced})
+            const lastPlaced = action && action.row === row && action.col === col
+            const winning = winningCells.some(coord => coord[0] === row && coord[1] === col)
+            rowtiles.push({tile, col, lastPlaced, winning})
         }
         rows.unshift(rowtiles)
         pos += state.colCount
@@ -94,20 +96,14 @@ function getAction(col) {
 
 ko.applyBindings(viewModel)
 
-//let myturnStart = 0
 function searchMoves() {
     requestAnimationFrame(function (time) {
-        const action = mcts.findBestAction(200)
-        const isTerminal = action.state.isTerminal()
         if (viewModel.myturn()) {
+            const action = mcts.findBestAction(200)
+            const isTerminal = action.state.isTerminal()
             if (mcts.tree.playouts > 100000 || isTerminal) {
-            //if (!myturnStart) {
-            //    myturnStart = time
-            //}
-            //if ((time - myturnStart) > 3000 || isTerminal) {
                 console.log("Taking action", action.action)
                 //console.log("From tree", mcts.tree)
-                //myturnStart = 0
                 mcts = mcts.takeAction(action.action)
                 viewModel.myturn(false)
                 viewModel.board(stateToGrid(mcts.tree))
@@ -116,6 +112,8 @@ function searchMoves() {
                     viewModel.gameInProgress(false);
                 }
             }
+        } else if (mcts.tree.playouts < 1000000) {
+            mcts.findBestAction(200)
         }
         
         if (!viewModel.gameOver()) {

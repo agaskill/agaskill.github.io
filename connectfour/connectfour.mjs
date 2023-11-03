@@ -69,6 +69,83 @@ export class ConnectFourState
         const result = this.getResult()
         return Boolean(result)
     }
+    getWinningCells() {
+        const cells = []
+        const rowCount = this.rowCount
+        const colCount = this.colCount
+        const board = this.board
+        for (let row = 0; row < rowCount; row++) {
+            const rowOffset = row * colCount
+            const rowUp1Offset = rowOffset + colCount
+            const rowUp2Offset = rowUp1Offset + colCount
+            const rowUp3Offset = rowUp2Offset + colCount
+            const rowDown1Offset = rowOffset - colCount
+            const rowDown2Offset = rowDown1Offset - colCount
+            const rowDown3Offset = rowDown2Offset - colCount
+            for (let col = 0; col < colCount; col++) {
+                const c = board[rowOffset + col]
+                if (c === 0) {
+                    continue
+                }
+
+                // Check upward (if there is room)
+                if (row < rowCount - 3 &&
+                    board[rowUp1Offset + col] == c &&
+                    board[rowUp2Offset + col] == c &&
+                    board[rowUp3Offset + col] == c)
+                {
+                    cells.push(
+                        [row, col],
+                        [row+1, col],
+                        [row+2, col],
+                        [row+3, col])
+                }
+
+                if (col < colCount - 3)
+                {
+                    // Check to the right (if there is room)
+                    if (col < colCount - 3 &&
+                        board[rowOffset + col+1] == c &&
+                        board[rowOffset + col+2] == c &&
+                        board[rowOffset + col+3] == c)
+                    {
+                        cells.push(
+                            [row, col],
+                            [row, col+1],
+                            [row, col+2],
+                            [row, col+3])
+                    }
+
+                    // Check up and right
+                    if (row < rowCount - 3 &&
+                        board[rowUp1Offset + col+1] == c &&
+                        board[rowUp2Offset + col+2] == c &&
+                        board[rowUp3Offset + col+3] == c)
+                    {
+                        cells.push(
+                            [row, col],
+                            [row+1, col+1],
+                            [row+2, col+2],
+                            [row+3, col+3])
+                    }
+
+                    // Check down and right
+                    if (row >= 3 &&
+                        board[rowDown1Offset + col+1] == c &&
+                        board[rowDown2Offset + col+2] == c &&
+                        board[rowDown3Offset + col+3] == c)
+                    {
+                        cells.push(
+                            [row, col],
+                            [row-1, col+1],
+                            [row-2, col+2],
+                            [row-3, col+3])
+                    }
+                }
+            }
+        }
+        return cells
+    }
     getResult() {
         let hasEmptyCells = false
         const rowCount = this.rowCount

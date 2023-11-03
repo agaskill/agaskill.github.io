@@ -32,6 +32,18 @@
             border: solid 4px darkorchid;
             background-color: darkorchid;
         }
+        .gametile.pulse {
+            animation: pulse 1s linear infinite alternate;
+        }
+
+        @keyframes pulse {
+            from {
+                background-color: white;
+            }
+            to {
+                background-color: darkorchid;
+            }
+        }
     </style>
 </head>
 
@@ -61,7 +73,7 @@
     <div class="gameboard" data-bind="with: board">
         <div data-bind="foreach: rows">
             <div class="board-row" data-bind="foreach: $data">
-                <span class="gametile" data-bind="text: tile, css: { highlight: lastPlaced }"></span>
+                <span class="gametile" data-bind="text: tile, css: { highlight: lastPlaced, pulse: winning }"></span>
             </div>
         </div>
     </div>
